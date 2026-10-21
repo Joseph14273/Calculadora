@@ -36,9 +36,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#2563eb",
         borderRadius: 8,
         justifyContent: "center",
-        margin: 4,
-        minHeight: 58,
-        width: "22%",
+        marginHorizontal: "1%",
+        marginVertical: 4,
+        aspectRatio: 1,
+        width: "23%",
     },
     pressed: {
         opacity: 0.75,
