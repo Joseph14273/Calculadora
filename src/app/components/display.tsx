@@ -1,27 +1,35 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
-const Display = () => {
+type DisplayProps = {
+    value: string;
+};
+
+const Display = ({ value }: DisplayProps) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.text}></Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.text}>{value}</Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#000',
-        padding: 20,
-        borderRadius: 10,
-        margin: 10,
-        height: 100,
-        width: '90%',
-        alignItems: 'center',
+        backgroundColor: "#111827",
+        borderColor: "#374151",
+        borderRadius: 18,
+        borderWidth: 1,
+        height: 112,
+        justifyContent: "flex-end",
+        marginBottom: 18,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        width: "94%",
     },
     text: {
-        color: '#992e2e',
-        fontSize: 24,
-        textAlign: 'right',
+        color: "#f9fafb",
+        fontSize: 38,
+        fontWeight: "600",
+        textAlign: "right",
     },
 });
 

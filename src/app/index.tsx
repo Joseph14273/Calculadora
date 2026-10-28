@@ -1,32 +1,39 @@
 import { useFonts } from "expo-font";
-import { StyleSheet, Text, View, type ImageSourcePropType } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Boton from "./components/boton";
 import Display from "./components/display";
+import { useCalculator } from "../hooks/useCalculator";
 
-// Cambia cualquier texto de esta lista para personalizar cada botón.
-const initialButtonLabels = [
-  "7", "8", "9", "÷",
-  "4", "5", "6", "×",
-  "1", "2", "3", "-",
-  "0", ".", "=", "+",
-];
+type CalculatorButton = {
+  label: string;
+  type: "numero" | "operador" | "accion" | "igual";
+  action: "write" | "delete" | "clear" | "calculate" | "root";
+};
 
-// Todos los botones usan este PNG. Cambia una línea individual si quieres otra imagen.
-// El orden coincide con initialButtonLabels: posición 0 = fila 1, columna 1.
-const buttonImages: (ImageSourcePropType | null)[] = [
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
-  require("../../assets/Iconos/image.png"), require("../../assets/Iconos/image.png"),
+const buttons: CalculatorButton[] = [
+  { label: "AC", type: "accion", action: "clear" },
+  { label: "DEL", type: "accion", action: "delete" },
+  { label: "√", type: "accion", action: "root" },
+  { label: "÷", type: "operador", action: "write" },
+  { label: "7", type: "numero", action: "write" },
+  { label: "8", type: "numero", action: "write" },
+  { label: "9", type: "numero", action: "write" },
+  { label: "×", type: "operador", action: "write" },
+  { label: "4", type: "numero", action: "write" },
+  { label: "5", type: "numero", action: "write" },
+  { label: "6", type: "numero", action: "write" },
+  { label: "-", type: "operador", action: "write" },
+  { label: "1", type: "numero", action: "write" },
+  { label: "2", type: "numero", action: "write" },
+  { label: "3", type: "numero", action: "write" },
+  { label: "+", type: "operador", action: "write" },
+  { label: "0", type: "numero", action: "write" },
+  { label: ".", type: "numero", action: "write" },
+  { label: "=", type: "igual", action: "calculate" },
 ];
 
 export default function Index() {
+  const { display, escribir, borrar, limpiar, calcular, raiz } = useCalculator();
   const [fontsLoaded] = useFonts({
     TheInquisition: require("../../assets/fonts/The Inquisition.ttf"),
   });
@@ -38,13 +45,20 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Calculadora</Text>
-      <Display />
+      <Display value={display} />
       <View style={styles.buttonsColumn}>
-        {initialButtonLabels.map((label, index) => (
+        {buttons.map(({ label, type, action }) => (
           <Boton
-            key={`${label}-${index}`}
+            key={label}
             texto={label}
-            imagen={buttonImages[index]}
+            tipo={type}
+            onPress={() => {
+              if (action === "write") escribir(label);
+              if (action === "delete") borrar();
+              if (action === "clear") limpiar();
+              if (action === "calculate") calcular();
+              if (action === "root") raiz();
+            }}
           />
         ))}
       </View>
@@ -57,13 +71,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 12,
+    backgroundColor: "#030712",
+    paddingHorizontal: 14,
     width: "100%",
   },
   title: {
     fontFamily: "TheInquisition",
     fontSize: 28,
-    marginBottom: 12,
+    color: "#f9fafb",
+    marginBottom: 16,
   },
   buttonsColumn: {
     alignContent: "center",
