@@ -2,6 +2,11 @@ import { useCallback, useState } from "react";
 
 type Operator = "+" | "-" | "×" | "÷";
 
+export type HistoryEntry = {
+  expression: string;
+  result: string;
+};
+
 const operators: Operator[] = ["+", "-", "×", "÷"];
 
 const isOperator = (value: string): value is Operator =>
@@ -83,6 +88,7 @@ export const useCalculator = () => {
   const [expression, setExpression] = useState("");
   const [display, setDisplay] = useState("0");
   const [hasCalculated, setHasCalculated] = useState(false);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
   const limpiar = useCallback(() => {
     setExpression("");
@@ -117,7 +123,7 @@ export const useCalculator = () => {
     const nextExpression = `${expression}${value}`;
     setExpression(nextExpression);
     setDisplay(nextExpression);
-  }, [display, expression, hasCalculated]);
+  }, [expression, hasCalculated]);
 
   const borrar = useCallback(() => {
     if (hasCalculated) {
@@ -137,6 +143,7 @@ export const useCalculator = () => {
 
     try {
       const result = formatResult(evaluateExpression(expression));
+      setHistory((current) => [{ expression, result }, ...current]);
       setDisplay(result);
       setExpression(result === "Error" ? "" : result);
       setHasCalculated(true);
@@ -158,6 +165,91 @@ export const useCalculator = () => {
     }
 
     const result = formatResult(Math.sqrt(value));
+    setHistory((current) => [{ expression: `√(${display})`, result }, ...current]);
+    setDisplay(result);
+    setExpression(result);
+    setHasCalculated(true);
+  }, [display]);
+
+  const cuadrado = useCallback(() => {
+    const value = Number(display);
+
+    if (!Number.isFinite(value)) {
+      setDisplay("Error");
+      setExpression("");
+      setHasCalculated(true);
+      return;
+    }
+
+    const result = formatResult(value ** 2);
+    setHistory((current) => [{ expression: `${display}²`, result }, ...current]);
+    setDisplay(result);
+    setExpression(result);
+    setHasCalculated(true);
+  }, [display]);
+
+  const porcentaje = useCallback(() => {
+    const value = Number(display);
+
+    if (!Number.isFinite(value)) {
+      setDisplay("Error");
+      setExpression("");
+      setHasCalculated(true);
+      return;
+    }
+
+    const result = formatResult(value / 100);
+    setHistory((current) => [{ expression: `${display}%`, result }, ...current]);
+    setDisplay(result);
+    setExpression(result);
+    setHasCalculated(true);
+  }, [display]);
+
+  const cambiarSigno = useCallback(() => {
+    const value = Number(display);
+
+    if (!Number.isFinite(value)) {
+      setDisplay("Error");
+      setExpression("");
+      setHasCalculated(true);
+      return;
+    }
+
+    const result = formatResult(value * -1);
+    setDisplay(result);
+    setExpression(result);
+    setHasCalculated(true);
+  }, [display]);
+
+  const inverso = useCallback(() => {
+    const value = Number(display);
+
+    if (!Number.isFinite(value) || value === 0) {
+      setDisplay("Error");
+      setExpression("");
+      setHasCalculated(true);
+      return;
+    }
+
+    const result = formatResult(1 / value);
+    setHistory((current) => [{ expression: `1/(${display})`, result }, ...current]);
+    setDisplay(result);
+    setExpression(result);
+    setHasCalculated(true);
+  }, [display]);
+
+  const cubo = useCallback(() => {
+    const value = Number(display);
+
+    if (!Number.isFinite(value)) {
+      setDisplay("Error");
+      setExpression("");
+      setHasCalculated(true);
+      return;
+    }
+
+    const result = formatResult(value ** 3);
+    setHistory((current) => [{ expression: `${display}³`, result }, ...current]);
     setDisplay(result);
     setExpression(result);
     setHasCalculated(true);
@@ -170,5 +262,11 @@ export const useCalculator = () => {
     limpiar,
     calcular,
     raiz,
+    cuadrado,
+    porcentaje,
+    cambiarSigno,
+    inverso,
+    cubo,
+    history,
   };
 };
